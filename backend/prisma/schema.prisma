@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Service {
+  id        String   @id @default(cuid())
+  name      String
+  prefix    String   @unique
+  color     String   @default("#3b82f6")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  tickets   Ticket[]
+  counters  Counter[]
+}
+
+model Counter {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isOnline  Boolean  @default(false)
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id])
+  createdAt DateTime @default(now())
+  tickets   Ticket[]
+  staff     Staff?
+}
+
+model Staff {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  role         String   @default("staff")
+  counterId    Int?     @unique
+  counter      Counter? @relation(fields: [counterId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model Ticket {
+  id           String    @id @default(cuid())
+  number       String    @unique
+  serviceId    String
+  service      Service   @relation(fields: [serviceId], references: [id])
+  status       String    @default("waiting")
+  priority     Int       @default(0)
+  counterId    Int?
+  counter      Counter?  @relation(fields: [counterId], references: [id])
+  peopleAhead  Int       @default(0)
+  estWaitMin    Int       @default(0)
+  createdAt    DateTime  @default(now())
+  calledAt     DateTime?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  notes        String?
+}
