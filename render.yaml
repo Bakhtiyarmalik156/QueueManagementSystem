@@ -2,18 +2,14 @@ services:
   - type: web
     name: queue-management-system
     env: node
-    buildCommand: npm run install:all && npm run build && cd backend && npx prisma migrate deploy && npm run db:seed
+    buildCommand: npm run install:all && npm run build && cd backend && npx prisma db push --accept-data-loss && npm run db:seed
     startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: file:/opt/render/project/backend/data/prod.db
+        value: postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require
       - key: JWT_SECRET
         generateValue: true
       - key: CLIENT_ORIGIN
         value: "*"
-    disk:
-      name: qms-data
-      mountPath: /opt/render/project/backend/data
-      sizeGB: 1
