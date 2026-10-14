@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const apiUrl = import.meta.env.VITE_API_URL || '';
-const api = axios.create({ baseURL: apiUrl ? `${apiUrl.replace(/\\/$/, '')}/api` : '/api' });
+const cleanApiUrl = apiUrl.endsWith('/') ? apiUrl.slice(0, -1) : apiUrl;
+const api = axios.create({ baseURL: cleanApiUrl ? `${cleanApiUrl}/api` : '/api' });
 
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('qms_token');
